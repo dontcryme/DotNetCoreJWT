@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using WebApiWithJWTService.Repositories;
+using WebApiWithJWTService.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 
 namespace WebApiWithJWTService
 {
@@ -28,7 +32,9 @@ namespace WebApiWithJWTService
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddTransient<IDBRepository, DBRepository>();
+            services.AddDbContext<ApplicationDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Connection")));
+            services.AddMvc().AddJsonOptions(value => value.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
